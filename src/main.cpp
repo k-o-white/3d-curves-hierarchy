@@ -7,8 +7,7 @@
 #include "Ellipse.h"
 #include "Helix.h"
 
-
-inline double t = M_PI_4;
+inline const double t = M_PI_4;
 
 enum curves {CIRCLE = 1, ELLIPSE, HELIX};
 
@@ -19,31 +18,31 @@ double randDouble(double min, double max)
 
 void fillCurvesContainer(std::vector<std::shared_ptr<Curve>> &curves)
 {
-    uint8_t count = std::rand() % 20 + 1;
+    uint8_t count = 10 + std::rand() % 11;
     for (int i = 0; i < count; ++i)
     {
-        uint8_t curveId = std::rand() % 3 + 1;
+        uint8_t curveId = 1 + std::rand() % 3;
         switch (curveId)
         {
             case CIRCLE:
             {
-                double radius = randDouble(1, 10);
+                double radius = randDouble(1.0, 10.0);
                 auto circle = std::make_shared<Circle>(radius);
                 curves.emplace_back(circle);
                 break;
             }
             case ELLIPSE:
             {
-                double rx = randDouble(1, 10);
-                double ry = randDouble(1, 10);
+                double rx = randDouble(1.0, 10.0);
+                double ry = randDouble(1.0, 10.0);
                 auto ellipse = std::make_shared<Ellipse>(rx, ry);
                 curves.emplace_back(ellipse);
                 break;
             }
             case HELIX:
             {
-                double radius = randDouble(1, 10);
-                double step = randDouble(1, 10);
+                double radius = randDouble(1.0, 10.0);
+                double step = randDouble(1.0, 10.0);
                 auto helix = std::make_shared<Helix>(radius, step);
                 curves.emplace_back(helix);
                 break;
@@ -52,12 +51,12 @@ void fillCurvesContainer(std::vector<std::shared_ptr<Curve>> &curves)
     }
 }
 
-void calculateCoordAndDerivatives(std::vector<std::shared_ptr<Curve>> &curves)
+void calculate3DPointsAndDerivatives(std::vector<std::shared_ptr<Curve>> &curves)
 {
-    std::cout << "Coordinates and derivatives at t = PI/4:" << std::endl;
+    std::cout << "3D points and derivatives at t = PI/4:" << std::endl;
     for (const auto &curve : curves)
     {
-        auto point3D = curve->getPoint(t);
+        auto point3D = curve->get3DPoint(t);
         auto derivative = curve->getDerivative(t);
         std::cout << std::endl;
         std::cout << "Point: " << point3D.x << ", " << point3D.y << ", " << point3D.z << "." << std::endl;
@@ -66,12 +65,23 @@ void calculateCoordAndDerivatives(std::vector<std::shared_ptr<Curve>> &curves)
     std::cout << std::endl;
 }
 
+double calculateSumOfRadii(std::vector<std::shared_ptr<Circle>> &circles)
+{
+    double result = 0;
+    #pragma omp parallel for default(none) reduction(+:result) shared(circles)
+    for (const auto &circle : circles)
+    {
+        result += circle->getRadius();
+    }
+    return result;
+}
+
 int main()
 {
     std::srand(time(nullptr));
     std::vector<std::shared_ptr<Curve>> curvesPointers;
     fillCurvesContainer(curvesPointers);
-    calculateCoordAndDerivatives(curvesPointers);
+    calculate3DPointsAndDerivatives(curvesPointers);
     std::vector<std::shared_ptr<Circle>> circles;
     for (const auto& curve : curvesPointers)
     {
@@ -83,12 +93,8 @@ int main()
     {
         return a->getRadius() < b->getRadius();
     });
-    double sumOfRadii = 0;
-#pragma omp parallel for reduction(+:sumOfRadii)
-    for (const auto &circle : circles)
-    {
-        sumOfRadii += circle->getRadius();
-    }
+    double sumOfRadii = calculateSumOfRadii(circles);
+
     std::cout << "Sum of radii of circles: " << sumOfRadii << "." << std::endl;
     return 0;
 }

@@ -22,5 +22,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+find_package(OpenMP REQUIRED)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
 add_subdirectory(src)
 add_subdirectory(tests)
+
+target_link_libraries(3DCurvesHierarchy PRIVATE OpenMP::OpenMP_CXX)
