@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include <cmath>
 #include "Curve.h"
 
 
@@ -13,11 +12,9 @@ private:
     double radius;
     double step;
 public:
-    Helix(double _radius, double _step) : radius(_radius), step(_step) {}
+    Helix(double _radius, double _step) : radius(_radius), step(_step) {};
 
-    ~Helix() = default;
-
-    Point3D getPoint(double t) const override;
+    Vector3D get3DPoint(double t) const override;
 
     Vector3D getDerivative(double t) const override;
 };
