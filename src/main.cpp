@@ -7,6 +7,7 @@
 #include "Ellipse.h"
 #include "Helix.h"
 
+
 inline const double t = M_PI_4;
 
 enum curves {CIRCLE = 1, ELLIPSE, HELIX};
@@ -18,7 +19,7 @@ double randDouble(double min, double max)
 
 void fillCurvesContainer(std::vector<std::shared_ptr<Curve>> &curves)
 {
-    uint8_t count = 10 + std::rand() % 11;
+    uint8_t count = 1 + std::rand() % 10;
     for (int i = 0; i < count; ++i)
     {
         uint8_t curveId = 1 + std::rand() % 3;
@@ -96,5 +97,7 @@ int main()
     double sumOfRadii = calculateSumOfRadii(circles);
 
     std::cout << "Sum of radii of circles: " << sumOfRadii << "." << std::endl;
+    std::cin.get();
+    std::cin.get();
     return 0;
 }
