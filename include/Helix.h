@@ -6,7 +6,7 @@
 #include "Curve.h"
 
 
-class Helix : virtual public Curve
+class Helix : public Curve
 {
 private:
     double radius;

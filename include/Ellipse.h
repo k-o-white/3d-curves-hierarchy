@@ -5,7 +5,7 @@
 #pragma once
 #include "Curve.h"
 
-class Ellipse : virtual public Curve
+class Ellipse : public Curve
 {
 private:
     double radiusX;
